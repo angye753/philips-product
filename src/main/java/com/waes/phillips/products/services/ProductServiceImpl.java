@@ -82,15 +82,15 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductsDTO getProducts(Boolean downstream) {
         try {
+
             if (downstream) {
                 return supplyChainIntegration.getProducts();
             }
 
             Iterable<Product> all = productRepository.findAll();
-
             return Optional.ofNullable(all)
-                    .map(pr -> ProductsDTO.builder().bundle(Arrays.asList()).build())
-                    .orElse(buildProductsDTO((List<Product>) all));
+                    .map(pr -> buildProductsDTO((List<Product>) all))
+                    .orElse(ProductsDTO.builder().bundle(Arrays.asList()).build());
 
         } catch (Exception e) {
             log.error("Error getting all products");

@@ -40,7 +40,7 @@ public class ProductControllerTest {
         ResponseEntity responseEntity = productController.getProducts(Boolean.FALSE);
 
         Assert.assertTrue(responseEntity.getStatusCode().equals(HttpStatus.OK));
-        Assert.assertTrue(((ArrayList)responseEntity.getBody()).isEmpty());
+        Assert.assertTrue(((ProductsDTO)responseEntity.getBody()).getBundle().isEmpty());
     }
 
     @Test
@@ -53,9 +53,9 @@ public class ProductControllerTest {
 
         Assert.assertTrue(responseEntity.getStatusCode().equals(HttpStatus.OK));
 
-        List productsResult = (List) responseEntity.getBody();
-        Assert.assertTrue(!productsResult.isEmpty());
-        Assert.assertEquals(((ProductDTO)productsResult.get(0)).getId(), "123");
+        ProductsDTO productsResult = (ProductsDTO) responseEntity.getBody();
+        Assert.assertTrue(!productsResult.getBundle().isEmpty());
+        Assert.assertEquals(((ProductDTO)productsResult.getBundle().get(0)).getId(), "123");
     }
 
     @Test
@@ -78,7 +78,7 @@ public class ProductControllerTest {
 
         ProductDTO productDTO = ProductDTO.builder().id("123")
                 .name("Product").build();
-        Mockito.when(productService.saveProduct(ArgumentMatchers.any(), Boolean.FALSE))
+        Mockito.when(productService.saveProduct(ArgumentMatchers.any(), ArgumentMatchers.any()))
                 .thenReturn(productDTO);
         ResponseEntity responseEntity = productController.saveProduct(productDTO, Boolean.FALSE);
 

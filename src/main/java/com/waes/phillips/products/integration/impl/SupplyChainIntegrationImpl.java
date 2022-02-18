@@ -16,6 +16,8 @@ import java.util.Optional;
 @Slf4j
 public class SupplyChainIntegrationImpl implements SupplyChainIntegration {
 
+    private static final String RESILIENCE4J_PRODUCTS_DOWNSTREAM = "product_downstream";
+
     private final String supplyChainIntegrationBasePath;
     private final String supplyChainIntegrationResourcesPath;
     private final String url;
@@ -32,7 +34,7 @@ public class SupplyChainIntegrationImpl implements SupplyChainIntegration {
     }
 
     @Override
-    @CircuitBreaker(name = "cd", fallbackMethod = "supplyChainFallback")
+    @CircuitBreaker(name = RESILIENCE4J_PRODUCTS_DOWNSTREAM, fallbackMethod = "supplyChainFallback")
     public ProductsDTO getProducts() {
         log.info("Getting All Products from Supply Chain Integration");
         return httpUtils.executeGetRequest(url, ProductsDTO.class);
@@ -74,6 +76,6 @@ public class SupplyChainIntegrationImpl implements SupplyChainIntegration {
 
     public ProductsDTO supplyChainFallback(Exception e) {
         return ProductsDTO.builder()
-                .bundle(Arrays.asList(ProductDTO.builder().name("angye").build())).build();
+                .bundle(Arrays.asList(ProductDTO.builder().name("Fallback message. Downstream service unavailable").build())).build();
     }
 }

@@ -2,6 +2,7 @@ package com.waes.phillips.products.services;
 
 import com.waes.phillips.products.data.Product;
 import com.waes.phillips.products.data.repository.ProductRepository;
+import com.waes.phillips.products.exception.ProductException;
 import com.waes.phillips.products.integration.SupplyChainIntegration;
 import com.waes.phillips.products.model.ProductDTO;
 import com.waes.phillips.products.model.ProductsDTO;
@@ -9,12 +10,12 @@ import com.waes.phillips.products.utils.ProductUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -106,7 +107,6 @@ public class ProductServiceImplTest {
 
         Iterable<Product> products = Arrays.asList();
         Mockito.when(productRepository.findAll()).thenReturn(products);
-
         Assert.assertTrue(productService.getProducts(Boolean.FALSE).getBundle().isEmpty());
     }
 
@@ -142,11 +142,12 @@ public class ProductServiceImplTest {
 
         Product product = ProductUtils.parseProductDTOToEntity(productDto);
         Mockito.when(productRepository.save(ArgumentMatchers.any())).thenReturn(product);
-        Mockito.when(productRepository.findById("123")).thenReturn(Optional.empty());
+        Mockito.when(productRepository.findById(ArgumentMatchers.any())).thenReturn(Optional.empty());
 
-        Optional<ProductDTO> productDTO = productService.updateProduct(productDto, "123", Boolean.FALSE);
-
-        Assert.assertTrue(!productDTO.isPresent());
+        Assertions.assertThrows(ProductException.class, () -> {
+            Optional<ProductDTO> productDTO = productService.updateProduct(productDto, "123", Boolean.FALSE);
+            Assert.assertTrue(!productDTO.isPresent());
+        });
         Mockito.verify(productRepository, Mockito.times(0)).save(ArgumentMatchers.any());
     }
 
