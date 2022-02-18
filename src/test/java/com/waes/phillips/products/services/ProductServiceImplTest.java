@@ -1,0 +1,148 @@
+package com.waes.phillips.products.services;
+
+import com.waes.phillips.products.data.Product;
+import com.waes.phillips.products.data.repository.ProductRepository;
+import com.waes.phillips.products.model.ProductDTO;
+import com.waes.phillips.products.model.ProductsDTO;
+import com.waes.phillips.products.utils.ProductUtils;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+@ExtendWith(MockitoExtension.class)
+public class ProductServiceImplTest {
+
+    @Mock
+    private ProductRepository productRepository;
+
+    @InjectMocks
+    private ProductServiceImpl productService;
+
+    @Before
+    public void setup() {
+
+        productService = new ProductServiceImpl();
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void success_save_product() {
+        ProductDTO productDto = ProductDTO.builder()
+                .id("123")
+                .name("New productDto")
+                .quantity(1)
+                .price(BigDecimal.TEN)
+                .build();
+
+        Product product = ProductUtils.parseProductDTOToEntity(productDto);
+        Mockito.when(productRepository.save(ArgumentMatchers.any())).thenReturn(product);
+
+        productService.saveProduct(productDto, Boolean.FALSE);
+
+        Mockito.verify(productRepository).save(ArgumentMatchers.any());
+    }
+
+    @Test
+    public void success_delete_product() {
+
+        ProductDTO productDto = ProductDTO.builder()
+                .id("123")
+                .name("New productDto")
+                .quantity(1)
+                .price(BigDecimal.TEN)
+                .build();
+
+        Product product = ProductUtils.parseProductDTOToEntity(productDto);
+        Mockito.when(productRepository.findById(ArgumentMatchers.any())).thenReturn(Optional.of(product));
+
+        productService.deleteProduct("123", Boolean.FALSE);
+
+        Mockito.verify(productRepository).delete(ArgumentMatchers.any());
+    }
+
+    @Test
+    public void success_get_products() {
+
+        ProductDTO productDto = ProductDTO.builder()
+                .id("123")
+                .name("New productDto")
+                .quantity(1)
+                .price(BigDecimal.TEN)
+                .build();
+
+        ProductDTO productDto2 = ProductDTO.builder()
+                .id("456")
+                .name("New productDto 2")
+                .quantity(1)
+                .price(BigDecimal.TEN)
+                .build();
+
+        Product product = ProductUtils.parseProductDTOToEntity(productDto);
+        Product product2 = ProductUtils.parseProductDTOToEntity(productDto2);
+
+        Iterable<Product> products = Arrays.asList(product, product2);
+        Mockito.when(productRepository.findAll()).thenReturn(products);
+
+        ProductsDTO productsEntity = productService.getProducts(Boolean.FALSE);
+
+        Assert.assertTrue(productsEntity.getBundle().size() == 2);
+        Assert.assertTrue(productsEntity.getBundle().get(0).getId() == "123");
+        Assert.assertTrue(productsEntity.getBundle().get(1).getId() == "456");
+    }
+
+    @Test
+    public void success_get_empty_products() {
+
+        Iterable<Product> products = Arrays.asList();
+        Mockito.when(productRepository.findAll()).thenReturn(products);
+
+        Assert.assertTrue(productService.getProducts(Boolean.FALSE).getBundle().isEmpty());
+    }
+
+    @Test
+    public void success_update_product() {
+        ProductDTO productDto = ProductDTO.builder()
+                .id("123")
+                .name("ProductDto updated")
+                .quantity(1)
+                .price(BigDecimal.TEN)
+                .build();
+
+        Product product = ProductUtils.parseProductDTOToEntity(productDto);
+        Mockito.when(productRepository.save(ArgumentMatchers.any())).thenReturn(product);
+        Mockito.when(productRepository.findById("123")).thenReturn(Optional.of(product));
+
+        Optional<ProductDTO> productDTO = productService.updateProduct(productDto, "123", Boolean.FALSE);
+
+        Mockito.verify(productRepository).save(ArgumentMatchers.any());
+
+        Assert.assertTrue(productDTO.isPresent());
+        Assert.assertTrue(productDTO.get().getName().equalsIgnoreCase("ProductDto updated"));
+    }
+
+    @Test
+    public void success_no_update_product() {
+        ProductDTO productDto = ProductDTO.builder()
+                .id("123")
+                .name("ProductDto updated")
+                .quantity(1)
+                .price(BigDecimal.TEN)
+                .build();
+
+        Product product = ProductUtils.parseProductDTOToEntity(productDto);
+        Mockito.when(productRepository.save(ArgumentMatchers.any())).thenReturn(product);
+        Mockito.when(productRepository.findById("123")).thenReturn(Optional.empty());
+
+        Optional<ProductDTO> productDTO = productService.updateProduct(productDto, "123", Boolean.FALSE);
+
+        Assert.assertTrue(!productDTO.isPresent());
+        Mockito.verify(productRepository, Mockito.times(0)).save(ArgumentMatchers.any());
+    }
+}
