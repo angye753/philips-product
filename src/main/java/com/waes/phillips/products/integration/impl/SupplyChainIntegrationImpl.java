@@ -5,28 +5,13 @@ import com.waes.phillips.products.integration.SupplyChainIntegration;
 import com.waes.phillips.products.model.ProductDTO;
 import com.waes.phillips.products.model.ProductsDTO;
 import com.waes.phillips.products.utils.HttpUtils;
-import com.waes.phillips.products.utils.ProductUtils;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.function.Supplier;
 
-/**
- * Integration class to handle Operations with Supply Chain Service.
- * Implements {@link SupplyChainIntegration} interface.
- *
- * @author jonathanadepaula
- */
 @Component
 @Slf4j
 public class SupplyChainIntegrationImpl implements SupplyChainIntegration {

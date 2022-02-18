@@ -2,6 +2,7 @@ package com.waes.phillips.products.services;
 
 import com.waes.phillips.products.data.Product;
 import com.waes.phillips.products.data.repository.ProductRepository;
+import com.waes.phillips.products.integration.SupplyChainIntegration;
 import com.waes.phillips.products.model.ProductDTO;
 import com.waes.phillips.products.model.ProductsDTO;
 import com.waes.phillips.products.utils.ProductUtils;
@@ -21,6 +22,9 @@ public class ProductServiceImplTest {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private SupplyChainIntegration supplyChainIntegration;
 
     @InjectMocks
     private ProductServiceImpl productService;
@@ -144,5 +148,25 @@ public class ProductServiceImplTest {
 
         Assert.assertTrue(!productDTO.isPresent());
         Mockito.verify(productRepository, Mockito.times(0)).save(ArgumentMatchers.any());
+    }
+
+    @Test
+    public void success_update_product_downstream() {
+        ProductDTO productDto = ProductDTO.builder()
+                .id("123")
+                .name("ProductDto updated")
+                .quantity(1)
+                .price(BigDecimal.TEN)
+                .build();
+
+        Mockito.when(supplyChainIntegration.updateProduct(ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(Optional.of(productDto));
+        Mockito.when(productRepository.findById("123")).thenReturn(Optional.empty());
+
+        Optional<ProductDTO> productDTO = productService.updateProduct(productDto, "123", Boolean.TRUE);
+
+        Mockito.verify(productRepository, Mockito.times(0)).save(ArgumentMatchers.any());
+        Assert.assertTrue(productDTO.isPresent());
+        Assert.assertTrue(productDTO.get().getName().equalsIgnoreCase("ProductDto updated"));
     }
 }
