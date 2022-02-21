@@ -80,7 +80,7 @@ public class HttpUtils {
 
     }
 
-    private <T> T executeRequest(HttpRequest request, Class<T> clazz) {
+    public <T> T executeRequest(HttpRequest request, Class<T> clazz) {
         log.info(String.format("Executing request to url %s.", request.uri()));
         HttpResponse response;
         try {

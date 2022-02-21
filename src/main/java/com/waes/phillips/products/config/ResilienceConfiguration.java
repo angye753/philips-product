@@ -93,7 +93,7 @@ public class ResilienceConfiguration {
      * @return {@link Retry}
      */
     @Bean
-    public Retry regittry() {
+    public Retry retry() {
         return retry;
     }
     @Bean
