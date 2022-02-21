@@ -41,7 +41,15 @@ I have added a Circuit Breaker to be able to add resilience to the app. If the e
 
 Decisions Made
 
+Following clean code - To add readability and maintainability 
 H2 Database - Java memory database. If necessary it would be simple to migrate to another database of choice.
 Jacoco - Verify covered percentage by unit tests.
-Swagger - Documentation
+Swagger - API Documentation
+circuit breakers - To add resilience to the app
+
+Improvements
+Add cache to avoid multiple calls with the same result
+Add docker file to be able to manage the project as microservice
+Deploy application in a cloud technology through terraform, that allows flexibility and scalability 
+Monitor app through New Relic and set alarms with parameters defined by business
 

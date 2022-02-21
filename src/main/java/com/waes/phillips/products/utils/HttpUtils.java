@@ -22,18 +22,14 @@ import java.util.function.Supplier;
 @Component
 public class HttpUtils {
 
-    private static final String SUPPLY_CHAIN_PRODUCT_SERVICE = "SUPPLY_CHAIN_PRODUCT_SERVICE";
     private HttpClient client;
     private static ObjectMapper mapper;
-    private static CircuitBreaker circuitBreaker;
     private static Retry retry;
 
     public HttpUtils(ObjectMapper mapper,
-                     CircuitBreaker circuitBreaker,
                      Retry retry) {
         this.client = HttpClient.newHttpClient();
         this.mapper = mapper;
-        this.circuitBreaker = circuitBreaker;
         this.retry = retry;
     }
 
@@ -112,7 +108,4 @@ public class HttpUtils {
         return null;
     }
 
-    private  <T> String defaultErrorFallback(){
-        return "Service unavailable";
-    }
 }
